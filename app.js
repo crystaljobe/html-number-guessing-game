@@ -1,57 +1,100 @@
 //create random num generator and set current random num to var
-const randomNumber = function(){
-    num = Math.floor(Math.random() * 100);
-    return num
-}
+const randomNumber = function () {
+  num = Math.floor(Math.random() * 100);
+  return num;
+};
 const currRandomNum = randomNumber();
-console.log(currRandomNum) //for testing
+console.log(currRandomNum); // for testing
 
-const guessForm = document.getElementById('guessForm'); //var for form submission
-const playerGuesses = document.getElementById("playerGuesses"); //var for player guesses list
-numOfGuesses = 0; //counter for final alert 
+const guessForm = document.getElementById("guessForm"); // var for form submission
+const playerGuesses = document.getElementById("playerGuesses"); // var for player guesses list
+const responseCont = document.getElementById("responseContainer");
 
-guessForm.addEventListener("submit", (event) => {
-    event.preventDefault(); // prevent the default form sub behavior
+let guessResponse = document.createElement("H5"); // add element for guess updates
 
-    let playerGuess = document.getElementById("input").value; // get input val & set to var
+numOfGuesses = 0; // counter for final alert
 
-    // create list item for each guess to display
-    let li = document.createElement('li');
-    li.innerText = playerGuess;
-    playerGuesses.appendChild(li);
+guessForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // prevent the default form sub behavior
+  const previousResponse =
+    document.getElementById("responseContainer").children[0];
+  if (previousResponse) {
+    previousResponse.remove();
+  }
 
-    // conditional statements for guesses
-    if(playerGuess > currRandomNum) {
-        numOfGuesses += 1; // add to numOfguess var for final alert 
-        alert("Too high, guess again.")
-    } else if (playerGuess < currRandomNum){
-        numOfGuesses += 1;
-        alert("Too low, guess again")
-    } else { //if correct answer return alert box based on # of guesses
-        numOfGuesses += 1;
-        if(numOfGuesses === 1){
-            alertMessage = `Phenomenal, it only took you ${numOfGuesses} guess. Maybe you should buy a lotto ticket today! Ready to play again?`
-            if(!alert(alertMessage)){window.location.reload()} //once user clicks 'ok' page reloads
-        } else if(numOfGuesses <= 5){
-            alertMessage =`WOW, it only took you ${numOfGuesses} guesses. Are you some kind of wizard?? Ready to play again?`
-            if(!alert(alertMessage)){window.location.reload()}
-        } else if(numOfGuesses > 5 && numOfGuesses <= 8){
-            alertMessage =`It took you ${numOfGuesses} guesses. Valiant effort human, but me thinks you can do better...ready to try again?`
-            if(!alert(alertMessage)){window.location.reload()}
-        } else {
-            alertMessage = `YIKES it took you ${numOfGuesses} guesses. Thou art like a blindfolded minstrel attempting to hit a note in a storm! Thy guesses dance around the mark like a tipsy jester at a feast! Verily, 'tis a spectacle to behold, albeit a comedic one! Ready to test your wits again?`
-            if(!alert(alertMessage)){window.location.reload()}
-        }
+  let playerGuess = document.getElementById("input").value; // get input val & set to var
+  let li = document.createElement("li"); // var for previous guesses to append list
+  li.innerText = playerGuess; // set element inner text to guess
+  playerGuesses.appendChild(li); // create list item for each guess to display
+
+  // conditional statements for guesses
+  if (playerGuess > currRandomNum) {
+    numOfGuesses += 1; // add to numOfguess var for final alert
+
+    let highResponse = await getResponse('high');
+    guessResponse.innerText = `Your guess of ${playerGuess}, is too high. ${highResponse}`;
+    responseCont.appendChild(guessResponse);
+
+    document.getElementById("input").value = null
+
+  } else if (playerGuess < currRandomNum) {
+    numOfGuesses += 1;
+
+    let lowResponse = await getResponse('low');
+    guessResponse.innerText = `Your guess of ${playerGuess}, is too low. ${lowResponse}`;
+    responseCont.appendChild(guessResponse);
+
+    document.getElementById("input").value = null
+
+  } else {
+    //if correct answer return alert box based on # of guesses
+    numOfGuesses += 1;
+    if (numOfGuesses === 1) {
+      alertMessage = `Phenomenal, it only took you ${numOfGuesses} guess. Maybe you should buy a lotto ticket today! Ready to play again?`;
+      if (!alert(alertMessage)) {
+        window.location.reload();
+      } //once user clicks 'ok' page reloads
+    } else if (numOfGuesses <= 5) {
+      alertMessage = `WOW, it only took you ${numOfGuesses} guesses. Are you some kind of wizard?? Ready to play again?`;
+      if (!alert(alertMessage)) {
+        window.location.reload();
+      }
+    } else if (numOfGuesses > 5 && numOfGuesses <= 8) {
+      alertMessage = `It took you ${numOfGuesses} guesses. Valiant effort human, but me thinks you can do better...ready to try again?`;
+      if (!alert(alertMessage)) {
+        window.location.reload();
+      }
+    } else {
+      alertMessage = `YIKES it took you ${numOfGuesses} guesses. Thou art like a blindfolded minstrel attempting to hit a note in a storm! Thy guesses dance around the mark like a tipsy jester at a feast! Verily, 'tis a spectacle to behold, albeit a comedic one! Ready to test your wits again?`;
+      if (!alert(alertMessage)) {
+        window.location.reload();
+      }
     }
-})
+  }
+});
 
-// submit button hover box shadow 
+// submit button hover box shadow
 const submitButton = document.getElementById("submitButton");
 submitButton.addEventListener("mouseenter", (event) => {
-    event.target.style.boxShadow = '0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19)';
-})
+  event.target.style.boxShadow =
+    "0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19)";
+});
 submitButton.addEventListener("mouseleave", (event) => {
-    event.target.style.boxShadow = null;
-})
+  event.target.style.boxShadow = null;
+});
 
+const getResponse = async (cond) => {
+  let num = Math.floor(Math.random() * 10);
+  let getResponses = ''
 
+  if (cond == "low") {
+    getResponses = await fetch("http://127.0.0.1:5000/lowResponses/");
+  } else if (cond == "high") {
+    getResponses = await fetch("http://127.0.0.1:5000/highResponses/")
+  }
+  let responses = await getResponses.json();
+  console.log(responses[num]["response"]);
+  return responses[num]["response"];
+};
+
+//getResponse();
