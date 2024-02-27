@@ -17,9 +17,9 @@ numOfGuesses = 0; // counter for final alert
 guessForm.addEventListener("submit", async (event) => {
   event.preventDefault(); // prevent the default form sub behavior
   const previousResponse =
-    document.getElementById("responseContainer").children[0];
+    document.getElementById("responseContainer").children[0]; 
   if (previousResponse) {
-    previousResponse.remove();
+    previousResponse.remove(); // if this element exists remove it to start fresh
   }
 
   let playerGuess = document.getElementById("input").value; // get input val & set to var
@@ -31,21 +31,19 @@ guessForm.addEventListener("submit", async (event) => {
   if (playerGuess > currRandomNum) {
     numOfGuesses += 1; // add to numOfguess var for final alert
 
-    let highResponse = await getResponse('high');
-    guessResponse.innerText = `Your guess of ${playerGuess}, is too high. ${highResponse}`;
-    responseCont.appendChild(guessResponse);
+    let highResponse = await getResponse("high");
+    guessResponse.innerText = `Your guess of ${playerGuess}, is too high. ${highResponse}`; // set the text content to rand gen response from database
+    responseCont.appendChild(guessResponse); // append response to html body
 
-    document.getElementById("input").value = null
-
+    document.getElementById("input").value = null; // set input value back to null
   } else if (playerGuess < currRandomNum) {
     numOfGuesses += 1;
 
-    let lowResponse = await getResponse('low');
+    let lowResponse = await getResponse("low");
     guessResponse.innerText = `Your guess of ${playerGuess}, is too low. ${lowResponse}`;
     responseCont.appendChild(guessResponse);
 
-    document.getElementById("input").value = null
-
+    document.getElementById("input").value = null;
   } else {
     //if correct answer return alert box based on # of guesses
     numOfGuesses += 1;
@@ -84,17 +82,23 @@ submitButton.addEventListener("mouseleave", (event) => {
 });
 
 const getResponse = async (cond) => {
-  let num = Math.floor(Math.random() * 10);
-  let getResponses = ''
+  try {
+    let num = Math.floor(Math.random() * 10);
+    let getResponses = "";
 
-  if (cond == "low") {
-    getResponses = await fetch("http://127.0.0.1:5000/lowResponses/");
-  } else if (cond == "high") {
-    getResponses = await fetch("http://127.0.0.1:5000/highResponses/")
+    if (cond == "low") {
+      getResponses = await fetch("http://127.0.0.1:5000/lowResponses/");
+    } else if (cond == "high") {
+      getResponses = await fetch("http://127.0.0.1:5000/highResponses/");
+    }
+    let responses = await getResponses.json();
+    console.log(responses[num]["response"]);
+    return responses[num]["response"];
+  } catch (err) {
+    console.log(err);
+    console.log(err.message);
+    console.log("Something is wrong")
   }
-  let responses = await getResponses.json();
-  console.log(responses[num]["response"]);
-  return responses[num]["response"];
 };
 
 //getResponse();
