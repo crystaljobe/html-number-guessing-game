@@ -1,19 +1,37 @@
 <!DOCTYPE html>
   <head>
     <meta charset="utf-8">
-    <title>TITLE</title>
+    <title>Number Guessing Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Your link to your CSS file -->
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="./styles.css">
     <!-- Your Javascript file goes here -->
-    <script src="" async defer></script>
+    <script src="./app.js" async defer></script>
+    <!-- font links -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anta&display=swap" rel="stylesheet">
   </head>
+
   <body>
     <!-- your HTML should go here -->
     <nav>
-      <h1>Let's Play the Guessing Number Game!</h1>
+      <h1>Number Guessing Game</h1>
+      <p>Guess a number between 1 - 100. After every guess you'll be notified if your guess is too high or too low.</p> 
+      <p>Each guess will appear below to remind you what you guessed.</p>
+      <p>Ready. Set. GUESS!</p>
     </nav>
 
+    <form id="guessForm">
+      <input id="input" name="guessed-number" type="text" placeholder="Enter thy guess human.."/>
+      <button id="submitButton">Cast Guess</button>
+    </form>
+
+    <div id="guesses-container">
+      <H4>Previous Guesses:</H4>
+      <ul id="playerGuesses">
+      </ul>
+    </div>
 
   </body>
 </html>
